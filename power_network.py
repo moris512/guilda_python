@@ -21,8 +21,25 @@ class PowerNetwork():
             else:
                 print("Type must a chile of Bus")
 
-    def get_admittance_matrix(self):
-        
+    def get_admittance_matrix(self, a_index_bus=None):
+        if not a_index_bus:
+            a_index_bus = [i for i in range(len(self.a_bus))]
+
+        n = len(self.a_bus)
+        Y = np.zeros(n, n)
+
+        for br in self.a_branch:
+            if (br.from_ in a_index_bus) and (br.to_ in a_index_bus):
+                Y_sub = br.get_admittance_matrix()
+                Y[br.from_, br.from_] += Y_sub[0, 0]
+                Y[br.from_, br.to_]   += Y_sub[0, 1]
+                Y[br.to_, br.from_]   += Y_sub[1, 0]
+                Y[br.to_, br.to_]     += Y_sub[1, 1]
+
+        for idx in a_index_bus:
+            Y[idx, idx] += self.a_bus[idx].shunt
+
+
 
 
     def add_branch(self, branch):
@@ -60,3 +77,4 @@ class PowerNetwork():
                 out = np.vstack((out, out_i))
 
         return out
+

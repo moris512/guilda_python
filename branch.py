@@ -8,7 +8,7 @@ class Branch():
         self.from_ = from_
         self.to_ = to_
 
-class Branch_pi(Branch):
+class BranchPi(Branch):
 
 # モデル ：対地静電容量をもつ送電線のπ型回路モデル
 #親クラス：branchクラス
@@ -32,11 +32,12 @@ class Branch_pi(Branch):
     def get_admittance_matrix(self):
         x = self.x
         y = self.y
-        Y = np.vstack(([complex(1/x,y), -1/x], [-1/x, complex(1/x,y)]))
+        Y = np.array(([complex(1/x,y), -1/x],
+                      [-1/x, complex(1/x,y)]))
         return Y
 
 
-class Branch_pi_transformer(Branch):
+class BranchPiTransformer(Branch):
 
 # モデル  ：対地静電容量をもつ送電線のπ型回路モデルに位相調整変圧器が組み込まれたモデル
 #親クラス：conntroller
