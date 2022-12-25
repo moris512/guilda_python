@@ -24,16 +24,14 @@ class Bus():
             Ieq = complex(Ieq[0],Ieq[0])
         self.V_equilibrium = Veq
         self.I_equilibrium = Ieq
-        #omponentクラスが実装できしだいコメントアウト解除
-        #self.component.set_equilibrium(Veq, Ieq)
+        self.component.set_equilibrium(Veq, Ieq)
 
     def set_component(self, component):
         if isinstance(component, Component):
             self.component = component
             if not self.V_equilibrium:
                 pass
-                #omponentクラスが実装できしだいコメントアウト解除
-                #self.component.set_equilibrium(self.V_equilibrium,self.I_equilibrium)
+                self.component.set_equilibrium(self.V_equilibrium,self.I_equilibrium)
         else:
             raise TypeError("must be a child of component")
 

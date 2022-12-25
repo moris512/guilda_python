@@ -5,10 +5,7 @@ class Component():
         pass
 
 class ComponentEmpty(Component):
-<<<<<<< Updated upstream
-    def __init__(self) -> None:
-        pass
-=======
+
     def __init__(self):
         self.x_equilibrium = None
 
@@ -45,7 +42,7 @@ class ComponentEmpty(Component):
 
 class LoadCurrent(Component):
     def __init__(self):
-        self.x_equilibrium = np.zeros(0, 1)
+        self.x_equilibrium = np.zeros([0, 1])
         self.V_equilibrium = None
         self.I_equilibrium = None
         self.Y = None
@@ -97,4 +94,3 @@ class LoadCurrent(Component):
         # 怪しい
         varargout = list(map(self.get_linear_matrix_, arg))
         return varargout
->>>>>>> Stashed changes
