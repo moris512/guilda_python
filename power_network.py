@@ -92,6 +92,13 @@ class PowerNetwork():
         Ians = Y @ Vans
         return [Vans, Ians]
 
+    def set_equilibrium(self, V, I):
+        for idx in range(len(self.a_bus)):
+            self.a_bus[idx].set_equilibrium(V[idx],I[idx])
+
+    def initialize(self):
+        V, I = self.calculate_power_flow()
+        self.set_equilibrium(V, I)
 
 
 
