@@ -53,10 +53,10 @@ class PowerNetwork():
             Y[idx, idx] += self.a_bus[idx].shunt
 
         Ymat = np.zeros((2*n, 2*n))
-        Ymat[ ::2, ::2] = Y.real
-        Ymat[ ::2,1::2] =-Y.imag
-        Ymat[1::2, ::2] = Y.imag
-        Ymat[1::2,1::2] = Y.real
+        Ymat[ ::2, ::2] =  Y.real
+        Ymat[ ::2,1::2] = -Y.imag
+        Ymat[1::2, ::2] =  Y.imag
+        Ymat[1::2,1::2] =  Y.real
 
         return [Y, Ymat]
 

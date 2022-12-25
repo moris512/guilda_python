@@ -8,6 +8,7 @@ class Bus():
         self.component = ComponentEmpty()
         self.shunt = shunt
 
+
 class BusSlack(Bus):
     def __init__(self, Vabs, Vangle, shunt):
         super().__init__(shunt)
@@ -19,6 +20,7 @@ class BusSlack(Bus):
         Vangle = np.array([ phase(complex(Vr, Vi)) ])
         return np.array([Vabs-self.Vabs, Vangle-self.Vangle])
 
+
 class BusPV(Bus):
     def __init__(self, P, Vabs, shunt):
         super().__init__(shunt)
@@ -29,6 +31,7 @@ class BusPV(Bus):
         Vabs = np.array([ norm([Vr, Vi]) ])
         return np.array([P-self.P, Vabs-self.Vabs])
 
+
 class BusPQ(Bus):
     def __init__(self, P, Q, shunt):
         super().__init__(shunt)
@@ -37,5 +40,3 @@ class BusPQ(Bus):
 
     def get_constraint(self, Vr, Vi, P, Q):
         return np.array([P-self.P, Q-self.Q])
-
-
