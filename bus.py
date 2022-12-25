@@ -8,7 +8,7 @@ class Bus():
     I_equilibrium = None
 
     def __init__(self, shunt):
-        self.component = ComponentEmpty()
+        self.set_component(ComponentEmpty())
         self.set_shunt(shunt)
 
     def get_nx(self):
@@ -24,6 +24,7 @@ class Bus():
             Ieq = complex(Ieq[0],Ieq[0])
         self.V_equilibrium = Veq
         self.I_equilibrium = Ieq
+        #omponentクラスが実装できしだいコメントアウト解除
         #self.component.set_equilibrium(Veq, Ieq)
 
     def set_component(self, component):
@@ -31,6 +32,7 @@ class Bus():
             self.component = component
             if not self.V_equilibrium:
                 pass
+                #omponentクラスが実装できしだいコメントアウト解除
                 #self.component.set_equilibrium(self.V_equilibrium,self.I_equilibrium)
         else:
             raise TypeError("must be a child of component")
@@ -39,7 +41,6 @@ class Bus():
         if type(shunt) == list:
             shunt = complex(shunt[0],shunt[1])
         self.shunt = shunt
-
 
 class BusSlack(Bus):
     def __init__(self, Vabs, Vangle, shunt):
@@ -52,7 +53,6 @@ class BusSlack(Bus):
         Vangle = np.array([ phase(complex(Vr, Vi)) ])
         return np.array([Vabs-self.Vabs, Vangle-self.Vangle])
 
-
 class BusPV(Bus):
     def __init__(self, P, Vabs, shunt):
         super().__init__(shunt)
@@ -63,7 +63,6 @@ class BusPV(Bus):
         Vabs = np.array([ norm([Vr, Vi]) ])
         return np.array([P-self.P, Vabs-self.Vabs])
 
-
 class BusPQ(Bus):
     def __init__(self, P, Q, shunt):
         super().__init__(shunt)
@@ -72,3 +71,5 @@ class BusPQ(Bus):
 
     def get_constraint(self, Vr, Vi, P, Q):
         return np.array([P-self.P, Q-self.Q])
+
+
