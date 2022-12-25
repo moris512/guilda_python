@@ -1,6 +1,5 @@
 import numpy as np
 from numpy import exp
-from branch import Branch
 
 
 class Branch():
@@ -25,8 +24,8 @@ class BranchPi(Branch):
         self.x = x
         self.y = y
 
-        if len(x) == 2:
-            x = complex(x(1), x(2))
+        if type(x) == list:
+            x = complex(x[0], x[1])
         self.y = y
 
     def get_admittance_matrix(self):

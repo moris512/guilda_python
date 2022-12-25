@@ -1,7 +1,9 @@
 import numpy as np
+from scipy.optimize import root
+from  cmath import phase
+
 from bus import Bus
 from branch import Branch
-from  cmath import phase
 
 class PowerNetwork():
     def __init__(self):
@@ -21,33 +23,6 @@ class PowerNetwork():
             else:
                 print("Type must a chile of Bus")
 
-    def get_admittance_matrix(self, a_index_bus=None):
-        if not a_index_bus:
-            a_index_bus = [i for i in range(len(self.a_bus))]
-
-        n = len(self.a_bus)
-        Y = np.zeros(n, n)
-
-        for br in self.a_branch:
-            if (br.from_ in a_index_bus) and (br.to_ in a_index_bus):
-                Y_sub = br.get_admittance_matrix()
-                Y[br.from_, br.from_] += Y_sub[0, 0]
-                Y[br.from_, br.to_]   += Y_sub[0, 1]
-                Y[br.to_, br.from_]   += Y_sub[1, 0]
-                Y[br.to_, br.to_]     += Y_sub[1, 1]
-
-        for idx in a_index_bus:
-            Y[idx, idx] += self.a_bus[idx].shunt
-
-        Ymat = np.zeros(2*n, 2*n)
-        Ymat[ ::2, ::2] = Y.real
-        Ymat[ ::2,1::2] =-Y.imag
-        Ymat[1::2, ::2] = Y.imag
-        Ymat[1::2,1::2] = Y.real
-
-        return [Y, Ymat]
-
-
     def add_branch(self, branch):
         if type(branch) != list:
             branch = [branch]
@@ -59,29 +34,64 @@ class PowerNetwork():
                 print("Type must a chile of Branch")
 
 
-    def helper(self, x, Y):
-        V = np.array([[complex(x[i], x[i+1])] for i in range(0, len(x), 2)])
-        I = Y @ V
+    def get_admittance_matrix(self, a_index_bus=None):
+        if not a_index_bus:
+            a_index_bus = [i for i in range(len(self.a_bus))]
+
+        n = len(self.a_bus)
+        Y = np.zeros((n, n), dtype=complex)
+
+        for br in self.a_branch:
+            if (br.from_-1 in a_index_bus) and (br.to_-1 in a_index_bus):
+                Y_sub = br.get_admittance_matrix()
+                Y[br.from_-1, br.from_-1] += Y_sub[0, 0]
+                Y[br.from_-1, br.to_-1]   += Y_sub[0, 1]
+                Y[br.to_-1, br.from_-1]   += Y_sub[1, 0]
+                Y[br.to_-1, br.to_-1]     += Y_sub[1, 1]
+
+        for idx in a_index_bus:
+            Y[idx, idx] += self.a_bus[idx].shunt
+
+        Ymat = np.zeros((2*n, 2*n))
+        Ymat[ ::2, ::2] = Y.real
+        Ymat[ ::2,1::2] =-Y.imag
+        Ymat[1::2, ::2] = Y.imag
+        Ymat[1::2,1::2] = Y.real
+
+        return [Y, Ymat]
+
+    def calculate_power_flow(self):
+        n = len(self.a_bus)
+
+        def func_eq(Y, x):
+            Vr = np.array([[x[i]] for i in range(0, len(x), 2)])
+            Vi = np.array([[x[i]] for i in range(1, len(x), 2)])
+            V = Vr + 1j*Vi
+
+            I = Y @ V
+            PQhat = V * I.conjugate()
+            P  = PQhat.real
+            Q  = PQhat.imag
+
+            out = []
+            for i in range(n):
+                bus = self.a_bus[i]
+                out_i = bus.get_constraint(V[i].real, V[i].imag, P[i], Q[i])
+                out.extend(out_i[:, 0].tolist())
+            return out
+
+        Y, _ = self.get_admittance_matrix()
+        x0 = [1, 0] * n
+
+        ans = root(lambda x: func_eq(Y, x), x0, method="hybr")
+
+        Vrans = np.array([[ans.x[i]] for i in range(0, len(ans.x), 2)])
+        Vians = np.array([[ans.x[i]] for i in range(1, len(ans.x), 2)])
+        Vans = Vrans + 1j*Vians
+
+        Ians = Y @ Vans
+        return [Vans, Ians]
 
 
-        PQhat = V * I.conjugate()
-        P  = PQhat.real
-        Q  = PQhat.imag
-        return [V, I, P, Q]
-
-    def func_power_flow(self, x, Y, a_bus):
-        # x: V1.real, V1.imag, V2.real, V2.imag, V3.real, V3.imag,
-        [V, I, P, Q] = self.helper(x, Y)
-        n = len(a_bus)
-
-        for i in range(n):
-            bus = a_bus[i]
-            out_i = bus.get_constraint(V[i].real, V[i].imag, P[i], Q[i])
-            if i == 0:
-                out = out_i
-            else:
-                out = np.vstack((out, out_i))
-
-        return out
 
 
