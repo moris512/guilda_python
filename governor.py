@@ -1,7 +1,7 @@
 from control import StateSpace as SS
 import numpy as np
 
-class Governor:
+class Governor():
     def __init__(self):
         self.P = None
         
@@ -35,7 +35,7 @@ class Governor:
         return sys
     
     def get_state_name(self):
-        nx = self.get_nx
+        nx = self.get_nx()
         name_tag = []
         if nx != 0:
             name_tag = ['state_governor' + str(i+1) for i in range(nx)]

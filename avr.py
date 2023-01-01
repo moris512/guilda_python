@@ -1,7 +1,7 @@
 from control import StateSpace as SS
 import numpy as np
 
-class Avr:
+class Avr():
     def __init__(self):
         self.Vfd_st = None
         self.Vabs_st = None
@@ -38,7 +38,7 @@ class Avr:
         return sys
 
     def get_state_name(self):
-        nx = self.get_nx
+        nx = self.get_nx()
         name_tag = []
         if nx != 0:
             name_tag = ['state_avr' + str(i+1) for i in range(nx)]
