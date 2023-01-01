@@ -50,13 +50,12 @@ class BranchPiTransformer(Branch):
 
     def __init__(self, from_, to, x, y, tap, phase):
         super().__init__(from_, to)
+        if type(x) == list:
+            x = complex(x[0], x[1])
         self.x = x
         self.y = y
         self.tap = tap
         self.phase = phase
-
-        if len(x) == 2:
-            x = complex(x(1),x(2))
 
     def get_admittance_matrix(self):
         x = self.x
