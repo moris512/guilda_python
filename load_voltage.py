@@ -40,7 +40,7 @@ class LoadVoltage(Component):
     def get_nu(self):
         return 2
 
-    def get_linear_matrix_(self):
+    def get_linear_matrix_(self, *args):
         A = np.array([]).reshape(1, -1)
         B = np.zeros([0, 2])
         C = np.zeros([2, 0])
