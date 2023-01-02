@@ -33,7 +33,7 @@ class LoadImpedance(Component):
 
     def get_dx_constraint(self, V, I, u, t=None, x=None):
         dx = np.zeros([0, 1])
-        Y = (self.Y).real*(1+u[1]) + 1j*(self.Y).imag*(1+u[2])
+        Y = (self.Y).real*(1+u[0, 0]) + 1j*(self.Y).imag*(1+u[1, 0])
         I_ = Y*V
         constraint = np.array([[I.real], [I.imag]]) - np.array([[I_.real], [I_.imag]])
         return [dx, constraint]
