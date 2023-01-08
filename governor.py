@@ -6,9 +6,9 @@ class Governor():
         self.P = None
         
         # ここではgovernorのダイナミクスを考慮しない
-        A = np.zeros([1,1])
-        B = np.zeros([1, 2])
-        C = np.zeros([2, 1])
+        A = np.array([])
+        B = np.array([]).reshape(-1, 1)
+        C = np.array([]).reshape(1, -1)
         D = np.identity(2)
         sys = SS(A, B, C, D)
         SS.set_inputs(sys, ['omega_governor', 'u_governor'])
@@ -19,13 +19,13 @@ class Governor():
     def initialize(self, P):
         self.P = P
         # governorに状態はない
-        x = np.array([])
+        x = np.array([]).reshape(-1, 1)
         return x
 
     def get_nx(self):
         return 0
 
-    def get_P(self, x_gov, omega, u):
+    def get_P(self, u, x_gov=None, omega=None):
         P = self.P + u
         dx = np.array([])
         return [dx, P]

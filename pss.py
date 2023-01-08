@@ -7,7 +7,7 @@ class Pss():
 #         発電機モデルに付加するために実装されたクラス
 #親クラス：handleクラス
 #実行方法：obj = pss(parameter)
-#　引数　：parameter : table型．「'Kpss','Tpss','TL1p','TL1','TL2p','TL2'」を列名として定義
+#　引数　：parameter : pandas.Series型．「'Kpss','Tpss','TL1p','TL1','TL2p','TL2'」を列名として定義
 #　出力　：pssクラスのインスタンス
     def __init__(self, pss_in=None):
         self.A = None
