@@ -118,8 +118,8 @@ class Generator1Axis(Component):
 
         return [dx, con]
 
-    def get_linear_matrix(self, xeq=None, Veq=None):
-        if (xeq==None and Veq==None) or ((not any(xeq)) and (not any(Veq))) or (xeq==None and (not any(Veq))) or ((not any(xeq)) and Veq==None):
+    def get_linear_matrix(self, xeq=[None], Veq=None):
+        if (not any(xeq) and Veq==None):
             A = self.system_matrix['A']
             B = self.system_matrix['B']
             C = self.system_matrix['C']
@@ -132,10 +132,10 @@ class Generator1Axis(Component):
             S = self.system_matrix['S']
             return
 
-        if xeq==None or (not any(xeq)):
+        if not any(xeq):
             xeq = self.x_equilibrium
 
-        if Veq==None or (not any(Veq)):
+        if Veq==None:
             Veq = self.V_equilibrium
 
         omega0 = self.omega0
@@ -260,7 +260,7 @@ class Generator1Axis(Component):
                 ['sys_avr.u_avr', 'sys_pss.v_pss'],
                 ['sys_pss.omega', 'sys_swing.omega'],
                 ['sys_gov.omega_governor', 'sys_swing.omega'],
-                ['sys_swing.Pmech', 'sys_governor.Pmech']
+                ['sys_swing.Pmech', 'sys_gov.Pmech']
             ],
             inplist=['sys_avr.u_avr', 'sys_gov.u_governor', 'sys_V.Vrin', 'sys_V.Viin'],
             outlist=['sys_fb.Ir', 'sys_fb.Ii']
