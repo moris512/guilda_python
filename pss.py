@@ -20,7 +20,7 @@ class Pss():
             A = np.array([])
             B = np.array([]).reshape(-1, 1)
             C = np.array([]).reshape(1, -1)
-            D = np.identity(1)
+            D = np.zeros([1, 1])
             sys = SS(A, B, C, D)
             SS.set_inputs(sys, ['omega'])
             SS.set_outputs(sys, ['v_pss'])

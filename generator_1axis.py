@@ -328,10 +328,11 @@ class Generator1Axis(Component):
         Eden = Vabs*sqrt(P**2*Xq**2 + Q**2*Xq**2 + 2*Q*Vabs**2*Xq + Vabs**4)
         E = Enum/Eden
         Vfd = Xd*E/Xdp - (Xd/Xdp-1)*Vabs*cos(delta-Vangle)
+        x_gen = np.array([[delta], [0], [E]])
         x_avr = self.avr.initialize(Vfd, Vabs)
         x_gov = self.governor.initialize(P)
         x_pss = self.pss.initialize()
-        x_st = np.array([delta, 0, E, x_avr, x_gov, x_pss]).reshape(-1, 1)
+        x_st = np.vstack((x_gen, x_avr, x_gov, x_pss))
         self.alpha_st = np.array([P, Vfd, Vabs]).reshape(-1, 1)
         self.x_equilibrium = x_st
         self.V_equilibrium = V
