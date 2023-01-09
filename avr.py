@@ -7,9 +7,9 @@ class Avr():
         self.Vabs_st = None
 
         # ここではavrのダイナミクスを考慮しない
-        A = np.zeros([1,1])
-        B = np.zeros([1, 3])
-        C = np.zeros([1, 1])
+        A = np.array([])
+        B = np.array([]).reshape(-1, 3)
+        C = np.array([]).reshape(1, -1)
         D = np.array([0, 0, 1])
         sys = SS(A, B, C, D)
         SS.set_inputs(sys, ['Vabs', 'Efd', 'u_avr'])
@@ -25,10 +25,10 @@ class Avr():
         self.Vfd_st = Vfd
         self.Vabs_st = Vabs
         # 状態がない
-        x = []
+        x = np.array([]).reshape(-1, 1)
         return x
 
-    def get_Vfd(self, x_avr, Vabs, Efd, u):
+    def get_Vfd(self, u, x_avr=None, Vabs=None, Efd=None):
         Vfd = self.Vfd_st + u
         dx = []
         return [dx, Vfd]
