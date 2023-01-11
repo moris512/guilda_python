@@ -6,13 +6,11 @@ from branch import BranchPi, BranchPiTransformer
 from bus import BusPQ, BusPV, BusSlack
 from generator import GeneratorBase
 from avr import Avr
-from load_current import LoadCurrent
+from load.load_current import LoadCurrent
 
 
-
-
-mac_data = [[1, 1, 0.1,    0.031,  0.069, 10.2, 84,   4   ],
-            [2, 3, 0.295,  0.0697, 0.282, 6.56, 60.4, 9.75]]
+mac_data = [[0, 0, 0.1,    0.031,  0.069, 10.2, 84,   4   ],
+            [1, 2, 0.295,  0.0697, 0.282, 6.56, 60.4, 9.75]]
 mac_cols = ['No_machine', 'No_bus', 'Xd', 'Xd_prime', 'Xq', 'T', 'M', 'D']
 macs_df = pd.DataFrame(data=mac_data, columns=mac_cols)
 
@@ -21,23 +19,23 @@ exc_data = [[1, 0, 0.05],
 exc_cols = ['No_bus', 'Ka', 'Te']
 excs_df = pd.DataFrame(data=exc_data, columns=exc_cols)
 
-
 pss_data = [[1, 0, 10, 0.05, 0.015, 0.08, 0.01],
             [3, 0, 10, 0.05, 0.015, 0.08, 0.01]]
 pss_cols = ['No_bus', 'Kpss', 'Tpss', 'TL1p', 'TL1', 'TL2p', 'TL2']
 psses_df = pd.DataFrame(data=pss_data, columns=pss_cols)
 
 def get_generator(i):
-    mac_i =  macs_df[macs_df['No_bus'] == i]
+    mac_i = macs_df[macs_df['No_bus'] == i]
     if mac_i.empty:
-        return
+        raise TypeError("No data for creating generator %s" % i)
     g = GeneratorBase(omega0, mac_i)
     exc_i = excs_df[excs_df['No_bus'] == i]
     g.set_avr(Avr(exc_i))
 #    pss_i = pss_df[pss_df['No_bus'] == i]
 #    g.set_pss(pss(pss_i))
-
-
+    print("g")
+    print(g)
+    return g
 
 
 
@@ -50,7 +48,6 @@ branch_data = [[1, 2, 0, 0.0576, 0, 1, 0],
                [3, 2, 0, 0.0625, 0, 1, 0]]
 branch_cols = ["bus_from", "bus_to", "x_real", "x_imag", "y", "tap", "phase"]
 branches_df = pd.DataFrame(data=branch_data, columns=branch_cols)
-print(branches_df)
 
 for i in range(len(branches_df)):
     branch_i = branches_df.loc[i]
@@ -65,9 +62,9 @@ for i in range(len(branches_df)):
 
 
 # バスの定義
-bus_data = [[1, 1.00, 0, 0.60, 0, 0  , 0  , 0, 0, 'PV'],
-            [2, 1.00, 0, 5.45, 0, 1.0, 1.0, 0, 0, 'PQ'],
-            [3, 1.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack']]
+bus_data = [[0, 1.00, 0, 0.60, 0, 0  , 0  , 0, 0, 'PV'],
+            [1, 1.00, 0, 5.45, 0, 1.0, 1.0, 0, 0, 'PQ'],
+            [2, 1.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack']]
 
 bus_cols = ['No', 'V_abs', 'V_angle', 'P_gen', 'Q_gen', 'P_load', 'Q_load', 'G_shunt', 'B_shunt', 'type']
 bus_df = pd.DataFrame(data=bus_data, columns=bus_cols)
@@ -81,6 +78,7 @@ for i in range(len(bus_df)):
         b.set_component(get_generator(i))
     elif bus_i['type'] == 'PV':
         b = BusPV(bus_i['P_load'], bus_i['V_abs'], shunt)
+        print(get_generator(i))
         b.set_component(get_generator(i))
     elif bus_i['type'] == 'PQ':
         P, Q = bus_i['P_load'], bus_i['Q_load']

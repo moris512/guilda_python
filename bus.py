@@ -30,8 +30,7 @@ class Bus():
         if isinstance(component, Component):
             self.component = component
             if not self.V_equilibrium:
-                pass
-                self.component.set_equilibrium(self.V_equilibrium,self.I_equilibrium)
+                self.component.set_equilibrium(self.V_equilibrium, self.I_equilibrium)
         else:
             raise TypeError("must be a child of component")
 
@@ -71,3 +70,6 @@ class BusPQ(Bus):
         return np.array([P-self.P, Q-self.Q])
 
 
+if __name__ == '__main__':
+    a = ComponentEmpty()
+    print(isinstance(a, ComponentEmpty))
