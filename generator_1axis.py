@@ -92,6 +92,7 @@ class Generator1Axis(Component):
 
         Efd = Xd*E/Xdp - (Xd/Xdp - 1)*Vabscos
 
+        # スカラーを返す
         [dx_pss, v] = self.pss.get_u(x_pss, omega)
         [dx_avr, Vfd] = self.avr.get_Vfd(x_avr=x_avr, Vabs=Vabs, Efd=Efd, u=u[0,0]-v)
         [dx_gov, P] = self.governor.get_P(x_gov=x_gov, omega=omega, u=u[1,0])
@@ -100,7 +101,14 @@ class Generator1Axis(Component):
         ddelta = omega0*omega
         domega = (P - d*omega - Vabs*E*sin(delta-Vangle)/Xdp + Vabs**2*(1/Xdp-1/Xq)*sin(2*(delta-Vangle))/2)/M
 
-        dx = np.array([ddelta, domega, dE, dx_avr, dx_pss, dx_gov]).reshape(-1, 1)
+        dE = np.array(dE).reshape(-1, 1)
+        ddelta = np.array(ddelta).reshape(-1, 1)
+        domega = np.array(domega).reshape(-1, 1)
+        dx_pss = np.array(dx_pss).reshape(-1, 1)
+        dx_avr = np.array(dx_avr).reshape(-1, 1)
+        dx_gov = np.array(dx_gov).reshape(-1, 1)
+
+        dx = np.vstack((ddelta, domega, dE, dx_avr, dx_pss, dx_gov))
 
         return [dx, con]
 
