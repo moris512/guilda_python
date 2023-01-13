@@ -98,6 +98,7 @@ class PowerNetwork():
 
     def initialize(self):
         V, I = self.calculate_power_flow()
+
         self.set_equilibrium(V, I)
 
 

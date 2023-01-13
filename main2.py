@@ -9,8 +9,8 @@ from avr import Avr
 from load.load_current import LoadCurrent
 
 
-mac_data = [[0, 0, 0.1,    0.031,  0.069, 10.2, 84,   4   ],
-            [1, 2, 0.295,  0.0697, 0.282, 6.56, 60.4, 9.75]]
+mac_data = [[1, 1, 0.1,    0.031,  0.069, 10.2, 84,   4   ],
+            [2, 3, 0.295,  0.0697, 0.282, 6.56, 60.4, 9.75]]
 mac_cols = ['No_machine', 'No_bus', 'Xd', 'Xd_prime', 'Xq', 'T', 'M', 'D']
 macs_df = pd.DataFrame(data=mac_data, columns=mac_cols)
 
@@ -60,9 +60,9 @@ for i in range(len(branches_df)):
 
 
 # バスの定義
-bus_data = [[0, 1.00, 0, 0.60, 0, 0  , 0  , 0, 0, 'PV'],
-            [1, 1.00, 0, 5.45, 0, 1.0, 1.0, 0, 0, 'PQ'],
-            [2, 1.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack']]
+bus_data = [[1, 1.00, 0, 0.60, 0, 0  , 0  , 0, 0, 'PV'],
+            [2, 1.00, 0, 5.45, 0, 1.0, 1.0, 0, 0, 'PQ'],
+            [3, 1.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack']]
 
 bus_cols = ['No', 'V_abs', 'V_angle', 'P_gen', 'Q_gen', 'P_load', 'Q_load', 'G_shunt', 'B_shunt', 'type']
 bus_df = pd.DataFrame(data=bus_data, columns=bus_cols)
@@ -73,10 +73,10 @@ for i in range(len(bus_df)):
     shunt = bus_i[['G_shunt', 'B_shunt']].values.tolist()
     if bus_i['type'] == 'slack':
         b = BusSlack(bus_i['V_abs'], bus_i['V_angle'], shunt)
-        b.set_component(get_generator(i))
+        b.set_component(get_generator(i+1))
     elif bus_i['type'] == 'PV':
         b = BusPV(bus_i['P_load'], bus_i['V_abs'], shunt)
-        b.set_component(get_generator(i))
+        b.set_component(get_generator(i+1))
     elif bus_i['type'] == 'PQ':
         P, Q = bus_i['P_load'], bus_i['Q_load']
         b = BusPQ(-P, -Q, shunt)

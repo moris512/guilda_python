@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from math import sin, cos, atan, atan2, sqrt
+from cmath import phase
 import control as ct
 from control import StateSpace as SS
 
@@ -27,7 +28,7 @@ class Generator1Axis(Component):
             cols = parameter.columns
             self.parameter = {}
             for c in cols:
-                self.parameter[c] = parameter["No_bus"].values[0]
+                self.parameter[c] = parameter[c].values[0]
 
         self.x_equilibrium = None
         self.V_equilibrium = None
@@ -115,25 +116,25 @@ class Generator1Axis(Component):
         return [dx, con]
 
     def get_dx_constraint_linear(self, x, V, I, u, t=None):
-        A = self.system_matrix['A']
-        B = self.system_matrix['B']
-        C = self.system_matrix['C']
-        D = self.system_matrix['D']
+        A  = self.system_matrix['A']
+        B  = self.system_matrix['B']
+        C  = self.system_matrix['C']
+        D  = self.system_matrix['D']
         BV = self.system_matrix['BV']
         DV = self.system_matrix['DV']
         BI = self.system_matrix['BI']
         DI = self.system_matrix['DI']
-        dx = A@(x-self.x_equilibrium) + B@u + BV@(V-self.V_equilibrium) + BI@(I-self.I_equilibrium)
-        con = C@(x-self.x_equilibrium) + D@u + DV@(V-self.V_equilibrium) + DI@(I-self.I_equilibrium)
+        dx = A @ (x-self.x_equilibrium) + B @ u + BV @ (V-self.V_equilibrium) + BI @ (I-self.I_equilibrium)
+        con = C @ (x-self.x_equilibrium) + D @ u + DV @ (V-self.V_equilibrium) + DI @ (I-self.I_equilibrium)
 
         return [dx, con]
 
     def get_linear_matrix(self, xeq=[None], Veq=None):
         if (not any(xeq) and Veq==None):
-            A = self.system_matrix['A']
-            B = self.system_matrix['B']
-            C = self.system_matrix['C']
-            D = self.system_matrix['D']
+            A  = self.system_matrix['A']
+            B  = self.system_matrix['B']
+            C  = self.system_matrix['C']
+            D  = self.system_matrix['D']
             BV = self.system_matrix['BV']
             DV = self.system_matrix['DV']
             BI = self.system_matrix['BI']
@@ -326,7 +327,7 @@ class Generator1Axis(Component):
 
     def set_equilibrium(self, V, I):
         Vabs = abs(V)
-        Vangle = atan2(V.imag, V.real)
+        Vangle = np.array([phase(V)])
         Pow = I.conjugate() * V
         P = Pow.real
         Q = Pow.imag
@@ -334,14 +335,14 @@ class Generator1Axis(Component):
         Xd = self.parameter['Xd']
         Xdp = self.parameter['Xd_prime']
         Xq = self.parameter['Xq']
-        print(Xd, Xdp, Xq)
 
-        delta = Vangle + atan(P/(Q+(Vabs**2)/Xq))
+        delta = Vangle + np.array([atan(P/(Q+(Vabs**2)/Xq))])
         Enum = Vabs**4 + Q**2*Xdp*Xq + Q*Vabs**2*Xdp + Q*Vabs**2*Xq + P**2*Xdp*Xq
         Eden = Vabs*sqrt(P**2*Xq**2 + Q**2*Xq**2 + 2*Q*Vabs**2*Xq + Vabs**4)
         E = Enum/Eden
+
         Vfd = Xd*E/Xdp - (Xd/Xdp-1)*Vabs*cos(delta-Vangle)
-        x_gen = np.array([[delta], [0], [E]])
+        x_gen = np.array([delta, [0], E])
         x_avr = self.avr.initialize(Vfd, Vabs)
         x_gov = self.governor.initialize(P)
         x_pss = self.pss.initialize()
