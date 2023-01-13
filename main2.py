@@ -4,7 +4,7 @@ from numpy import pi
 from power_network import PowerNetwork
 from branch import BranchPi, BranchPiTransformer
 from bus import BusPQ, BusPV, BusSlack
-from generator import GeneratorBase
+from generator_1axis import Generator1Axis
 from avr import Avr
 from load.load_current import LoadCurrent
 
@@ -28,13 +28,11 @@ def get_generator(i):
     mac_i = macs_df[macs_df['No_bus'] == i]
     if mac_i.empty:
         raise TypeError("No data for creating generator %s" % i)
-    g = GeneratorBase(omega0, mac_i)
+    g = Generator1Axis(omega0, mac_i)
     exc_i = excs_df[excs_df['No_bus'] == i]
-    g.set_avr(Avr(exc_i))
+    g.set_avr(Avr) # 現状は avr の引数なし
 #    pss_i = pss_df[pss_df['No_bus'] == i]
 #    g.set_pss(pss(pss_i))
-    print("g")
-    print(g)
     return g
 
 
@@ -78,7 +76,6 @@ for i in range(len(bus_df)):
         b.set_component(get_generator(i))
     elif bus_i['type'] == 'PV':
         b = BusPV(bus_i['P_load'], bus_i['V_abs'], shunt)
-        print(get_generator(i))
         b.set_component(get_generator(i))
     elif bus_i['type'] == 'PQ':
         P, Q = bus_i['P_load'], bus_i['Q_load']
@@ -89,8 +86,5 @@ for i in range(len(bus_df)):
 
     net.add_bus(b)
 
-
-
-
 net.initialize()
-print(vars(net.a_branch[0]))
+

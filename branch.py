@@ -4,8 +4,8 @@ from numpy import exp
 
 class Branch():
     def __init__(self, from_, to) -> None:
-        self.from_ = from_
-        self.to = to
+        self.from_ = int(from_)
+        self.to = int(to)
 
 class BranchPi(Branch):
 
