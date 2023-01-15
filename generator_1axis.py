@@ -353,3 +353,5 @@ class Generator1Axis(Component):
         self.I_equilibrium = I
         self.set_linear_matrix(x_st, V)
         return x_st
+
+
