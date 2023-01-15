@@ -9,6 +9,10 @@ class Controller(metaclass=ABCMeta):
         self.__index_all = None
         self._get_dx_u_func = None
 
+        if type(index_input) == np.ndarray:
+            index_input = index_input.flatten().tolist()
+        if type(index_observe) == np.ndarray:
+            index_observe = index_observe.flatten().tolist()
         self.index_input = index_input
         self.index_observe = index_observe
         
@@ -32,8 +36,8 @@ class Controller(metaclass=ABCMeta):
         # XiとUiは各バスの列ベクトルを縦に並べたリスト
         # ViとIiは各バスの列ベクトルを横に並べたリスト
         Xi = lambda i: list(map(lambda x: [x[0][i, :].reshape(-1, 1)], X))
-        Vi = lambda i: list(map(lambda v: v[i, :].reshape(-1, 1), V))
-        Ii = lambda j: list(map(lambda i: i[j, :].reshape(-1, 1), I))
+        Vi = lambda i: np.hstack(tuple(map(lambda v: v[i, :].reshape(-1, 1), V)))
+        Ii = lambda j: np.hstack(tuple(map(lambda i: i[j, :].reshape(-1, 1), I)))
         Ui = lambda i: list(map(lambda u: [u[0][i, :].reshape(-1, 1)], U))
 
         [_, u] = self.get_dx_u_func(t[0, 0], x[0, :].reshape(-1, 1), Xi(0), Vi(0), Ii(0), Ui(0))

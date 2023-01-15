@@ -11,7 +11,7 @@ class ControllerBroadcastPIAGC(Controller):
 # 　　　　　・　Kp  ： float値。Pゲイン(ネガティブフィードバックの場合負の値に)
 # 　　　　　・　Ki  ： float値。Iゲイン(ネガティブフィードバックの場合負の値に)
 # 　出力　：controllerクラスのインスタンス
-    def __init__(self, net, y_idx, u_idx, Kp, Ki):
+    def __init__(self, net, y_idx, u_idx, Kp, Ki):   
         super().__init__(u_idx, y_idx)
         self.Ki = Ki
         self.Kp = Kp
@@ -36,7 +36,7 @@ class ControllerBroadcastPIAGC(Controller):
         # 2×(K_inputの要素数)
         u = np.kron(np.array([0,1]), self.K_input[:]*(self.Ki*(x.reshape(-1,1)) + self.Kp*omega_mean)).T
         # 列ベクトルに整形
-        u = np.vstack((u[:,[i]] for i in range(u.shape[1])))
+        u = np.vstack(tuple(u[:,[i]] for i in range(u.shape[1])))
         return [dx, u]
 
     def get_dx_u_linear(self, x, X, t=None, V=None, I=None, u_global=None):
@@ -44,6 +44,30 @@ class ControllerBroadcastPIAGC(Controller):
 
     def get_linear_matrix(self):
         A = np.zeros([1,1])
+
+        # net.a_busは各バスの情報を縦に並べたリストを想定
+        # リストの要素は'component'や'P'などをkeyとする辞書と想定
+        bus_observe = [self.net.a_bus[i][0] for i in self.index_observe]
+        # nx,nuは観測するバスにつながっている機器の状態・入力数を縦に並べたベクトル
+        nx = np.vstack(tuple(map(lambda b: b['component'].get_nx(), bus_observe)))
+        nu = np.vstack(tuple(map(lambda b: b['component'].get_nu(), bus_observe)))
+
+        BX = np.hstack(tuple(map(lambda i: np.array([[0, self.K_observe[i,0]] + [0]*(nx[i,0]-2)]), list(range(len(nx))))))
+        DX = np.zeros([len(self.K_input)*2, BX.shape[1]])
+        DX[1::2, :] = self.Kp * (self.K_input @ BX)
+
+        C = np.zeros([len(self.K_input)*2, 1])
+        C[1::2, :] = self.K_input * self.Ki
+
+        BV = np.zeros([1, 2*len(self.index_observe)])
+        BI = np.zeros([1, 2*len(self.index_observe)])
+        DV = np.zeros([C.shape[0], 2*len(self.index_observe)])
+        DI = np.zeros([C.shape[0], 2*len(self.index_observe)])
+
+        Bu = np.zeros([1, sum(nu)[0]])
+        Du = np.zeros([C.shape[0], sum(nu)[0]])
+
+        return [A, BX, BV, BI, Bu, C, DX, DV, DI, Du]
 
     def get_signals(self, X=None, V=None):
         return []
