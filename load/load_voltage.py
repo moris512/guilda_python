@@ -14,7 +14,7 @@ class LoadVoltage(Component):
     def __init__(self):
         self.x_equilibrium = np.zeros([0, 1])
         self.S = np.array([]).reshape(1, -1)
-        self.R = np.array([]).reshape(1, -1)
+        self.R = np.zeros([0,0])
 
         self.V_equilibrium = None
         self.I_equilibrium = None
@@ -41,10 +41,10 @@ class LoadVoltage(Component):
         return 2
 
     def get_linear_matrix_(self, *args):
-        A = np.array([]).reshape(1, -1)
+        A = np.zeros([0, 0])
         B = np.zeros([0, 2])
         C = np.zeros([2, 0])
-        D = np.identity(2) @ np.array([[self.I_equilibrium.real], [self.I_equilibrium.imag]])
+        D = np.diag([self.I_equilibrium.real, self.I_equilibrium.imag])
         BV = np.zeros([0, 2])
         BI = np.zeros([0, 2])
         DV = np.zeros([2, 2])

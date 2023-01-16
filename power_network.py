@@ -1,9 +1,12 @@
 import numpy as np
+from numpy.linalg import inv
 from scipy.optimize import root
 from  cmath import phase
 
 from bus.bus import Bus
 from branch.branch import Branch
+
+from scipy.linalg import block_diag
 
 class PowerNetwork():
     def __init__(self):
@@ -99,6 +102,42 @@ class PowerNetwork():
     def initialize(self):
         V, I = self.calculate_power_flow()
         self.set_equilibrium(V, I)
+
+    def get_sys(self):
+        #A, B, C, D, BV, DV, BI, DI, R, S
+        mats = [[] for _ in range(10)]
+        for b in self.a_bus:
+            mat = b.component.get_linear_matrix()
+            for i in range(len(mats)):
+                if mat[i].shape == (0,0):
+                    continue
+                mats[i].append(mat[i])
+        [A, B, C, D, BV, DV, BI, DI, R, S] = list(map(lambda mat: block_diag(*mat), mats))
+        nI = C.shape[0]
+        nx = A.shape[0]
+
+
+        nV = BV.shape[1]
+        nd = R.shape[1]
+        nu = B.shape[1]
+        nz = S.shape[0]
+        [_, Ymat] = self.get_admittance_matrix()
+
+        A11 = A
+        A12 = np.hstack([BV, BI])
+        A21 = np.vstack([C, np.zeros((nI, nx))])
+        A22 = np.block([[DV, DI], [Ymat, -np.eye(nI)]])
+        B1  = np.hstack([B, R])
+        B2  = np.block([[D, np.zeros([nV, nd])], [np.zeros([nI, nu+nd])]])
+        C1  = np.vstack([np.eye(nx), S, np.zeros([nI+nV, nx])])
+        C2  = np.vstack([np.zeros([nx+nz, nV+nI]), np.eye(nV+nI)])
+
+        A_  = A11-A12 @ inv(A22) @ A21
+        B_  = B1-A12 @ inv(A22) @ B2
+        C_  = C1-C2 @ inv(A22) @ A21
+        D_  = -C2 @ inv(A22) @ B2
+        return [A_, B_, C_, D_]
+
 
 
 

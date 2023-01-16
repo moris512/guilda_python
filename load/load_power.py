@@ -14,14 +14,14 @@ class LoadPower(Component):
     def __init__(self, *args):
         self.x_equilibrium = np.zeros([0, 1])
         self.S = np.array([]).reshape(1, -1)
-        self.R = np.array([]).reshape(1, -1)
+        self.R = np.zeros([0,0])
 
         self.V_equilibrium = None
         self.I_equilibrium = None
         self.P_st = None
         self.Q_st = None
         self.Y = None
-    
+
     def set_equilibrium(self, Veq, Ieq):
         self.V_equilibrium = Veq
         self.I_equilibrium = Ieq
@@ -60,7 +60,7 @@ class LoadPower(Component):
             P = self.P_st
             Q = self.Q_st
 
-            A = np.array([]).reshape(1, -1)
+            A = np.zeros([0, 0])
             B = np.zeros([0, 2])
             C = np.zeros([2, 0])
             D = np.array([[P*Vr, Q*Vi], [P*Vi, -Q*Vr]])/abs(V)

@@ -141,7 +141,7 @@ class Generator1Axis(Component):
             DI = self.system_matrix['DI']
             R = self.system_matrix['R']
             S = self.system_matrix['S']
-            return
+            return [A, B, C, D, BV, DV, BI, DI, R, S]
 
         if not any(xeq):
             xeq = self.x_equilibrium
@@ -294,8 +294,8 @@ class Generator1Axis(Component):
         DV = ss_closed.D[:, SS.find_input(ss_closed, 'Vrin'):SS.find_input(ss_closed, 'Viin')+1]
         BI = np.zeros([A.shape[0], 2])
         DI = -np.identity(2)
-        R = np.array([[]])
-        S = np.array([[]])
+        R = np.array([[]]).reshape(self.get_nx(),-1)
+        S = np.array([[]]).reshape(-1,self.get_nx())
 
         return [A, B, C, D, BV, DV, BI, DI, R, S]
 

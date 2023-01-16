@@ -38,4 +38,3 @@ class ComponentEmpty(Component):
         BI = np.zeros([0, 2])
 
         return [A, B, C, D, BV, DV, BI, DI, R, S]
-        
