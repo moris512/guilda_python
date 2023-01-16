@@ -3,9 +3,11 @@ from numpy import pi
 
 from power_network import PowerNetwork
 from branch import BranchPi, BranchPiTransformer
-from bus import BusPQ, BusPV, BusSlack
-from generator_1axis import Generator1Axis
-from avr import Avr
+from bus.bus_pq import BusPQ
+from bus.bus_pv import BusPV
+from bus.bus_slack import BusSlack
+from generator.generator_1axis import Generator1Axis
+from avr.avr import Avr
 from load.load_current import LoadCurrent
 
 
@@ -87,4 +89,5 @@ for i in range(len(bus_df)):
     net.add_bus(b)
 
 net.initialize()
+
 

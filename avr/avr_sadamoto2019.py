@@ -2,10 +2,10 @@ from control import StateSpace as SS
 import numpy as np
 import pandas as pd
 
-from avr import Avr
+from avr.avr import Avr
 
 class AvrSadamoto2019(Avr):
-# モデル  ：定本先生が2019年の論文で紹介されたモデル 
+# モデル  ：定本先生が2019年の論文で紹介されたモデル
 #親クラス：avrクラス
 #実行方法：AvrSadamoto2019(avr_pd)
 #　引数　：・avr_pd：pandas.Series型の変数。「'Te','Ka'」を列名として定義
@@ -27,7 +27,7 @@ class AvrSadamoto2019(Avr):
 
     def get_nx(self):
         return 1
-    
+
     def initialize(self, Vfd, Vabs):
         self.Vfd_st = Vfd
         self.Vabs_st = Vabs

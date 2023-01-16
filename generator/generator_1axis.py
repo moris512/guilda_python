@@ -7,7 +7,7 @@ from control import StateSpace as SS
 
 from component import Component
 from governor import Governor
-from avr import Avr
+from avr.avr import Avr
 from pss import Pss
 
 class Generator1Axis(Component):
@@ -327,7 +327,7 @@ class Generator1Axis(Component):
 
     def set_equilibrium(self, V, I):
         Vabs = abs(V)
-        Vangle = np.array([phase(V)])
+        Vangle = phase(V)
         Pow = I.conjugate() * V
         P = Pow.real
         Q = Pow.imag
@@ -336,13 +336,13 @@ class Generator1Axis(Component):
         Xdp = self.parameter['Xd_prime']
         Xq = self.parameter['Xq']
 
-        delta = Vangle + np.array([atan(P/(Q+(Vabs**2)/Xq))])
+        delta = Vangle + atan(P/(Q+(Vabs**2)/Xq))
         Enum = Vabs**4 + Q**2*Xdp*Xq + Q*Vabs**2*Xdp + Q*Vabs**2*Xq + P**2*Xdp*Xq
         Eden = Vabs*sqrt(P**2*Xq**2 + Q**2*Xq**2 + 2*Q*Vabs**2*Xq + Vabs**4)
         E = Enum/Eden
 
         Vfd = Xd*E/Xdp - (Xd/Xdp-1)*Vabs*cos(delta-Vangle)
-        x_gen = np.array([delta, [0], E])
+        x_gen = np.array([[delta], [0], [E]])
         x_avr = self.avr.initialize(Vfd, Vabs)
         x_gov = self.governor.initialize(P)
         x_pss = self.pss.initialize()
