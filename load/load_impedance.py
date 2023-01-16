@@ -14,7 +14,7 @@ class LoadImpedance(Component):
     def __init__(self, *args):
         self.x_equilibrium = np.zeros([0, 1])
         self.S = np.array([]).reshape(1, -1)
-        self.R = np.array([]).reshape(1, -1)
+        self.R = np.zeros([0,0])
 
         self.V_equilibrium = None
         self.I_equilibrium = None
@@ -25,8 +25,8 @@ class LoadImpedance(Component):
         self.V_equilibrium = Veq
         self.I_equilibrium = Ieq
         self.set_admittance(Ieq/Veq)
-    
-    def complex2matrix(y):
+
+    def complex2matrix(self, y):
         r = y.real
         c = y.imag
         return np.array([[r, -c], [c, r]])
@@ -45,20 +45,21 @@ class LoadImpedance(Component):
         self.Y = y
         self.Y_mat = self.complex2matrix(y)
 
-    def get_linear_matrix_(self, V, x=None):
+    def get_linear_matrix(self, V=None, x=None):
         if x == None:
-            [A, B, C, D, BV, DV, BI, DI, R, S] = self.get_linear_matrix_(V=self.V_equilibrium)
-        else:
-            A = np.array([]).reshape(1, -1)
-            B = np.zeros([0, 2])
-            C = np.zeros([2, 0])
-            D1 = self.complex2matrix(self.Y.real)@np.array([[V.real], [V.imag]])
-            D2 = self.complex2matrix(1j*(self.Y.imag))@np.array([[V.real], [V.imag]])
-            D = np.array([D1, D2]).reshape(2, -1)
-            BV = np.zeros([0, 2])
-            DV = self.Y_mat
-            R = self.R
-            S = self.S
-            BI = np.zeros([0, 2])
-            DI = -np.identity(2)
+            [A, B, C, D, BV, DV, BI, DI, R, S] = self.get_linear_matrix(V=self.V_equilibrium, x=[])
+            return [A, B, C, D, BV, DV, BI, DI, R, S]
+
+        A = np.zeros([0, 0])
+        B = np.zeros([0, 2])
+        C = np.zeros([2, 0])
+        D1 = self.complex2matrix(self.Y.real) @ np.array([[V.real], [V.imag]])
+        D2 = self.complex2matrix(1j*(self.Y.imag)) @ np.array([[V.real], [V.imag]])
+        D = np.hstack([D1, D2])
+        BV = np.zeros([0, 2])
+        DV = self.Y_mat
+        R = self.R
+        S = self.S
+        BI = np.zeros([0, 2])
+        DI = -np.identity(2)
         return [A, B, C, D, BV, DV, BI, DI, R, S]

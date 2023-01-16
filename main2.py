@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from numpy import pi
 
 from power_network import PowerNetwork
@@ -9,11 +10,11 @@ from bus.bus_pv import BusPV
 from bus.bus_slack import BusSlack
 from generator.generator_1axis import Generator1Axis
 from avr.avr import Avr
-from load.load_current import LoadCurrent
+from load.load_impedance import LoadImpedance
 
 
-mac_data = [[1, 1, 0.1,    0.031,  0.069, 10.2, 84,   4   ],
-            [2, 3, 0.295,  0.0697, 0.282, 6.56, 60.4, 9.75]]
+mac_data = [[1, 1, 1.569,  0.963,  0.963, 5.14, 100,   10  ],
+            [2, 2, 1.220,  0.667, 0.667, 8.92,  12, 10]]
 mac_cols = ['No_machine', 'No_bus', 'Xd', 'Xd_prime', 'Xq', 'T', 'M', 'D']
 macs_df = pd.DataFrame(data=mac_data, columns=mac_cols)
 
@@ -45,8 +46,8 @@ net = PowerNetwork()
 
 
 # ブランチの定義
-branch_data = [[1, 2, 0, 0.0576, 0, 1, 0],
-               [3, 2, 0, 0.0625, 0, 1, 0]]
+branch_data = [[1, 2, 0.01 , 0.085, 0, 0, 0],
+               [3, 2, 0.017, 0.092, 0, 0, 0]]
 branch_cols = ["bus_from", "bus_to", "x_real", "x_imag", "y", "tap", "phase"]
 branches_df = pd.DataFrame(data=branch_data, columns=branch_cols)
 
@@ -63,9 +64,9 @@ for i in range(len(branches_df)):
 
 
 # バスの定義
-bus_data = [[1, 1.00, 0, 0.60, 0, 0  , 0  , 0, 0, 'PV'],
-            [2, 1.00, 0, 5.45, 0, 1.0, 1.0, 0, 0, 'PQ'],
-            [3, 1.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack']]
+bus_data = [[1, 2.00, 0, 1.00, 2, 0  , 0  , 0, 0, 'slack'],
+            [2, 2.00, 0, 0.50, 0, 0  , 0  , 0, 0, 'PV'],
+            [3, 1.00, 0, 5.45, 0, -3,  0, 0, 0, 'PQ']]
 
 bus_cols = ['No', 'V_abs', 'V_angle', 'P_gen', 'Q_gen', 'P_load', 'Q_load', 'G_shunt', 'B_shunt', 'type']
 bus_df = pd.DataFrame(data=bus_data, columns=bus_cols)
@@ -78,17 +79,24 @@ for i in range(len(bus_df)):
         b = BusSlack(bus_i['V_abs'], bus_i['V_angle'], shunt)
         b.set_component(get_generator(i+1))
     elif bus_i['type'] == 'PV':
-        b = BusPV(bus_i['P_load'], bus_i['V_abs'], shunt)
+        b = BusPV(bus_i['P_gen'], bus_i['V_abs'], shunt)
         b.set_component(get_generator(i+1))
     elif bus_i['type'] == 'PQ':
         P, Q = bus_i['P_load'], bus_i['Q_load']
-        b = BusPQ(-P, -Q, shunt)
+        b = BusPQ(P, Q, shunt)
         if not (P == Q == 0):
-            load = LoadCurrent()
+            load = LoadImpedance()
             b.set_component(load)
 
     net.add_bus(b)
 
 net.initialize()
+
+
+[A, B, C, D] = net.get_sys()
+
+
+
+
 
 

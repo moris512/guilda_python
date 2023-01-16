@@ -5,10 +5,10 @@ from cmath import phase
 from component import Component, ComponentEmpty
 
 class Bus():
-    V_equilibrium = None
-    I_equilibrium = None
 
     def __init__(self, shunt):
+        self.V_equilibrium = None
+        self.I_equilibrium = None
         self.set_component(ComponentEmpty())
         self.set_shunt(shunt)
 
