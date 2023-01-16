@@ -3,7 +3,7 @@ from scipy.optimize import root
 from  cmath import phase
 
 from bus.bus import Bus
-from branch import Branch
+from branch.branch import Branch
 
 class PowerNetwork():
     def __init__(self):
