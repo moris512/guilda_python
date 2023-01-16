@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import root
 from  cmath import phase
 
-from bus import Bus
+from bus.bus import Bus
 from branch import Branch
 
 class PowerNetwork():
@@ -42,12 +42,12 @@ class PowerNetwork():
         Y = np.zeros((n, n), dtype=complex)
 
         for br in self.a_branch:
-            if (br.from_-1 in a_index_bus) and (br.to_-1 in a_index_bus):
+            if (br.from_-1 in a_index_bus) and (br.to-1 in a_index_bus):
                 Y_sub = br.get_admittance_matrix()
                 Y[br.from_-1, br.from_-1] += Y_sub[0, 0]
-                Y[br.from_-1, br.to_-1]   += Y_sub[0, 1]
-                Y[br.to_-1, br.from_-1]   += Y_sub[1, 0]
-                Y[br.to_-1, br.to_-1]     += Y_sub[1, 1]
+                Y[br.from_-1, br.to-1]    += Y_sub[0, 1]
+                Y[br.to-1, br.from_-1]    += Y_sub[1, 0]
+                Y[br.to-1, br.to-1]       += Y_sub[1, 1]
 
         for idx in a_index_bus:
             Y[idx, idx] += self.a_bus[idx].shunt
@@ -94,7 +94,7 @@ class PowerNetwork():
 
     def set_equilibrium(self, V, I):
         for idx in range(len(self.a_bus)):
-            self.a_bus[idx].set_equilibrium(V[idx],I[idx])
+            self.a_bus[idx].set_equilibrium(V[idx][0],I[idx][0])
 
     def initialize(self):
         V, I = self.calculate_power_flow()
