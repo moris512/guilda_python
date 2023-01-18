@@ -2,6 +2,10 @@ from control import StateSpace as SS
 import numpy as np
 
 class Avr():
+    '''
+    AVR base class
+    '''
+    
     def __init__(self):
         self.Vfd_st = None
         self.Vabs_st = None

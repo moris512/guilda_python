@@ -1,17 +1,18 @@
 import numpy as np
 
-from component import Component
+from guilda.component import Component
 
 class LoadCurrent(Component):
-# モデル ：定電流負荷モデル
-#       ・状態：なし
-#       ・入力：２ポート「電流フェーザの実部の倍率,電流フェーザの虚部の倍率」
-#               *入力αのとき値は設定値の(1+α)倍となる．
-#親クラス：componentクラス
-#実行方法：obj = load_current()
-#　引数　：なし
-#　出力　：componentクラスのインスタンス
+
     def __init__(self):
+        """
+        モデル ：定電流負荷モデル
+        
+        ・状態：なし
+        
+        ・入力：２ポート「電流フェーザの実部の倍率,電流フェーザの虚部の倍率」
+            *入力αのとき値は設定値の(1+α)倍となる．
+        """        
         self.x_equilibrium = np.zeros([0, 1])
         self.V_equilibrium = None
         self.I_equilibrium = None

@@ -1,15 +1,16 @@
 from control import StateSpace as SS
 import numpy as np
-import pandas as pd
 
-from avr.avr import Avr
+from guilda.avr.avr import Avr
 
 class AvrSadamoto2019(Avr):
-# モデル  ：定本先生が2019年の論文で紹介されたモデル
-#親クラス：avrクラス
-#実行方法：AvrSadamoto2019(avr_pd)
-#　引数　：・avr_pd：pandas.Series型の変数。「'Te','Ka'」を列名として定義
-#　出力　：avrクラスの変数
+    '''
+    モデル  ：定本先生が2019年の論文で紹介されたモデル
+    親クラス：avrクラス
+    実行方法：AvrSadamoto2019(avr_pd)
+    引数　：・avr_pd：pandas.Series型の変数。「'Te','Ka'」を列名として定義
+    出力　：avrクラスの変数
+    '''
     def __init__(self, avr_pd):
         self.Vfd_st = None
         self.Vabs_st = None

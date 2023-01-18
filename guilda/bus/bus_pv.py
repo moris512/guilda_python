@@ -1,4 +1,4 @@
-from bus.bus import Bus
+from guilda.bus.bus import Bus
 import numpy as np
 from numpy.linalg import norm
 

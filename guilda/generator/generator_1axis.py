@@ -5,23 +5,31 @@ from cmath import phase
 import control as ct
 from control import StateSpace as SS
 
-from component import Component
-from governor import Governor
-from avr.avr import Avr
-from pss import Pss
+from guilda.component import Component
+from guilda.governor import Governor
+from guilda.avr.avr import Avr
+from guilda.pss import Pss
 
 class Generator1Axis(Component):
-# モデル  ：同期発電機の一軸モデル
-#         ・状態：３つ「回転子偏角"δ",周波数偏差"Δω",内部電圧"E"」
-#               *AVRやPSSが付加されるとそれらの状態も追加される
-#         ・入力：２ポート「界磁入力"Vfield", 機械入力"Pmech"」
-#               *定常値からの追加分を指定
-# 親クラス：componentクラス
-# 実行方法：obj =　generator_1axis(omega, parameter)
-# 　引数　：・omega     : float値．系統周波数(50or60*2pi)
-# 　　　　　・parameter : pandas.Series型．「'Xd', 'Xd_prime','Xq','T','M','D'」を列名として定義
-# 　出力　：componentクラスのインスタンス
-    def __init__(self, omega, parameter):
+    """
+    モデル  ：同期発電機の一軸モデル
+    ・状態：３つ「回転子偏角"δ",周波数偏差"Δω",内部電圧"E"」
+        *AVRやPSSが付加されるとそれらの状態も追加される
+    ・入力：２ポート「界磁入力"Vfield", 機械入力"Pmech"」
+        *定常値からの追加分を指定
+    """    
+    
+    def __init__(self, omega: float, parameter: pd.Series):
+        """_summary_
+
+        Args:
+            omega (float): 系統周波数(50or60*2pi)
+            parameter (pd.Series): 「'Xd', 'Xd_prime','Xq','T','M','D'」を列名として定義
+
+        Raises:
+            TypeError: _description_
+        """        
+        
         if type(parameter) != pd.core.frame.DataFrame:
             raise TypeError('parameter must be pandas.Series')
         else:

@@ -1,9 +1,9 @@
 import numpy as np
 from cmath import phase
-from component import LoadCurrent
-from power_network import PowerNetwork
-from bus.bus import BusSlack, BusPV, BusPQ, Bus
-from branch import BranchPi
+from guilda.component import LoadCurrent
+from guilda.power_network import PowerNetwork
+from guilda.bus.bus import BusSlack, BusPV, BusPQ, Bus
+from guilda.branch import BranchPi
 
 
 y12 = 1.3652 - 11.6040j

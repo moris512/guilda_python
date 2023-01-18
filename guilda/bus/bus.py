@@ -2,9 +2,9 @@ import numpy as np
 from numpy.linalg import norm
 from cmath import phase
 
-from component import Component, ComponentEmpty
+from guilda.component import Component, ComponentEmpty
 
-class Bus():
+class Bus(object):
 
     def __init__(self, shunt):
         self.V_equilibrium = None

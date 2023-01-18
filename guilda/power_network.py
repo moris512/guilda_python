@@ -1,14 +1,20 @@
 import numpy as np
 from numpy.linalg import inv
-from scipy.optimize import root
-from  cmath import phase
-
-from bus.bus import Bus
-from branch.branch import Branch
-
 from scipy.linalg import block_diag
 
-class PowerNetwork():
+
+from scipy.optimize import root
+from cmath import phase
+
+
+from guilda.bus.bus import Bus
+from guilda.branch.branch import Branch
+
+
+class PowerNetwork(object):
+    '''
+    Power Network Base Class
+    '''
     def __init__(self):
         self.x_equilibrium = None
         self.V_equilibrium = None
