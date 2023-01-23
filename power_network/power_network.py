@@ -5,16 +5,36 @@ from  cmath import phase
 
 from bus.bus import Bus
 from branch.branch import Branch
+from typing import *
 
 from scipy.linalg import block_diag
 
-class PowerNetwork():
+from power_network.simulate_options import SimulateOptions
+from utils.io import from_dict
+from utils.data import expand_complex_arr
+
+
+class PowerNetwork(object):
+    
     def __init__(self):
-        self.x_equilibrium = None
-        self.V_equilibrium = None
-        self.I_equilibrium = None
-        self.a_bus = []
-        self.a_branch = []
+        
+        self.a_bus: List[Bus] = []
+        self.a_branch: List[Branch] = []
+        self.a_controller_local = []
+        self.a_controller_global = []
+
+    @property
+    def x_equilibrium(self):
+        return [b.component.x_equilibrium for b in self.a_bus]
+    
+    @property
+    def V_equilibrium(self):
+        return [b.V_equilibrium for b in self.a_bus]
+    
+    @property
+    def I_equilibrium(self):
+        return [b.I_equilibrium for b in self.a_bus]
+    
 
     def add_bus(self, bus):
         if type(bus) != list:
@@ -24,7 +44,7 @@ class PowerNetwork():
             if isinstance(b, Bus):
                 self.a_bus.append(b)
             else:
-                print("Type must a chile of Bus")
+                print("Type must a child of Bus")
 
     def add_branch(self, branch):
         if type(branch) != list:
@@ -34,7 +54,7 @@ class PowerNetwork():
             if isinstance(b, Branch):
                 self.a_branch.append(b)
             else:
-                print("Type must a chile of Branch")
+                print("Type must a child of Branch")
 
 
     def get_admittance_matrix(self, a_index_bus=None):
@@ -138,6 +158,43 @@ class PowerNetwork():
         D_  = -C2 @ inv(A22) @ B2
         return [A_, B_, C_, D_]
 
+    def simulate(
+        self, 
+        t: Tuple[float, float], 
+        u: List[float] = None, 
+        idx_u: List[int] = None, 
+        options: Union[SimulateOptions, Dict[str, Any]] = {}, 
+        **kwargs):
+        
+        # process options
+        if isinstance(options, dict):
+            options = from_dict(SimulateOptions, {**options, **kwargs})
+        elif (isinstance(options, SimulateOptions)):
+            for k, v in kwargs.items:
+                options.__setattr__(k, v)
+        else:
+            raise TypeError()
+        options.set_parameter_from_pn(self)
+        
+        # process u and index of u
+        if u is None:
+            u = []
+        if idx_u is None:
+            idx_u = []
+        
+        out = self.solve_odes(t, u, idx_u,
+                                options.fault,
+                                options.x0_sys,
+                                options.x0_con_global,
+                                options.x0_con_local,
+                                expand_complex_arr(options.V0),
+                                expand_complex_arr(options.I0),
+                                options.linear,
+                                options)
+            
+        # simulate
+        # TODO......
+        
+    
 
-
-
+    
